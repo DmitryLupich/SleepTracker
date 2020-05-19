@@ -11,7 +11,8 @@ import SwiftUI
 struct AlarmView: View {
     @EnvironmentObject var alarmPlayer: AlarmPlayer
     @ObservedObject var viewModel: AlarmViewModel
-
+    @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
     var body: some View {
         VStack {
             HStack(spacing: 32) {
@@ -32,6 +33,7 @@ struct AlarmView: View {
             }
             Button("Set an alarm on: \(viewModel.selectedHourTitle()):\(viewModel.selectedMinuteTitle())") {
                 self.alarmPlayer.alarmDate = self.viewModel.setAlarm()
+                self.presentationMode.wrappedValue.dismiss()
             }
             VStack {
                 if viewModel.alarmIsSet {

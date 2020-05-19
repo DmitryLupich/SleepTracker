@@ -1,5 +1,5 @@
 //
-//  Int+Extensions.swift
+//  Extensions.swift
 //  Sleepacification
 //
 //  Created by Dmitriy Lupych on 17.05.2020.
@@ -23,5 +23,4 @@ extension Double {
 
 extension TimeInterval {
     static let day = 86400.0
-    static let threeHours = 10800.0
 }

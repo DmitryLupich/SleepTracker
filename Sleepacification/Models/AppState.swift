@@ -7,3 +7,8 @@
 //
 
 import Foundation
+
+enum AppState: String {
+    case idle, playing, recording, paused, alarm
+    var title: String { self.rawValue.capitalized }
+}

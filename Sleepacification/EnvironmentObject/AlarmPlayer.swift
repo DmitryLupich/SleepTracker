@@ -51,9 +51,9 @@ extension AlarmPlayer {
         let alarm = $alarmDate.assign(to: \AlarmPlayer.alarm, on: self)
 
         let recordingPermission = $askRecordingPermission.sink { _ in
-            self.recorder.requestPermission { flag in
+            self.recorder.requestPermission { isAuthorized in
                 //TODO: - Handle ok/cancel
-                print(flag)
+                Logger.log(value: isAuthorized, logType: .info)
             }
         }
         
@@ -62,9 +62,8 @@ extension AlarmPlayer {
     }
 
     private func start() {
-        playerTimer = nil
         player.stop()
-        player.play(sound: .some)
+        player.play(sound: .rain)
         appState = .playing
         playerTimer = Timer.scheduledTimer(
             withTimeInterval: sleepTimer,
@@ -72,27 +71,32 @@ extension AlarmPlayer {
             block: { [weak self] _ in
                 self?.player.stop()
                 // Playing empty sound on repeat, to prevent deleting app from the memory
+                // Also, trick with location manager (allowsBackgroundLocationUpdates) is an option
                 self?.player.play(sound: .empty)
                 self?.recorder.record()
                 self?.appState = .recording
+                Logger.log(message: "Start playing empty sound", value: "", logType: .info)
         })
     }
 
     private func pause() {
         appState = .paused
         player.stop()
+        recorder.stop()
     }
 
     private func addAlarm(to date: Date?) {
-        //TODO: - Handle error
+        //TODO: - Handle nil case
         guard let date = date else { return }
-        let alarmTimeInterval = date.timeIntervalSince(Date().addingTimeInterval(.threeHours))
+        let alarmTimeInterval = date.timeIntervalSince(Date()) - 60*60*3
         alarmTimer = Timer.scheduledTimer(
             withTimeInterval: alarmTimeInterval,
             repeats: false,
             block: { [weak self] _ in
+                Logger.log(message: "Alarm fired", value: true, logType: .info)
                 self?.player.stop()
                 self?.player.play(sound: .alarm)
+                self?.appState = .alarm
         })
     }
 }
